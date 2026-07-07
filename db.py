@@ -17,6 +17,14 @@ def init_db():
             sources TEXT
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS documents (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT UNIQUE NOT NULL,
+            content TEXT NOT NULL,
+            timestamp TEXT NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -31,6 +39,38 @@ def save_interaction(question, base_answer, rag_answer, sources):
         INSERT INTO history (timestamp, question, base_answer, rag_answer, sources)
         VALUES (?, ?, ?, ?, ?)
     ''', (timestamp, question, base_answer, rag_answer, sources_str))
+    conn.commit()
+    conn.close()
+
+def save_document(filename, content):
+    """Saves or updates a document in the database."""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO documents (filename, content, timestamp)
+        VALUES (?, ?, ?)
+        ON CONFLICT(filename) DO UPDATE SET
+            content=excluded.content,
+            timestamp=excluded.timestamp
+    ''', (filename, content, timestamp))
+    conn.commit()
+    conn.close()
+
+def get_all_documents():
+    """Retrieves all documents from the database."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT filename, content FROM documents')
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"filename": row[0], "content": row[1]} for row in rows]
+
+def delete_document(filename):
+    """Deletes a document from the database."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM documents WHERE filename = ?', (filename,))
     conn.commit()
     conn.close()
 

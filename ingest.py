@@ -1,33 +1,39 @@
 import os
-from langchain_community.document_loaders import TextLoader
+import shutil
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
+import db
 
 
-DATA_DIR = "data"
 DB_DIR = "vector_db"
 
 
 def load_documents():
+    db_docs = db.get_all_documents()
     documents = []
 
-    for file_name in os.listdir(DATA_DIR):
-        if file_name.endswith(".txt"):
-            file_path = os.path.join(DATA_DIR, file_name)
-            loader = TextLoader(file_path, encoding="utf-8")
-            docs = loader.load()
-
-            for doc in docs:
-                doc.metadata["source"] = file_name
-
-            documents.extend(docs)
+    for item in db_docs:
+        doc = Document(
+            page_content=item["content"],
+            metadata={"source": item["filename"]}
+        )
+        documents.append(doc)
 
     return documents
 
 
 def create_vector_database():
+    # Clear existing vector database to rebuild it dynamically
+    if os.path.exists(DB_DIR):
+        shutil.rmtree(DB_DIR)
+
     documents = load_documents()
+    
+    if not documents:
+        print("No documents found in the database. Vector DB not created.")
+        return None
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=700,
@@ -44,9 +50,9 @@ def create_vector_database():
         persist_directory=DB_DIR
     )
 
-    print(f"Loaded {len(documents)} documents.")
+    print(f"Loaded {len(documents)} documents from SQLite.")
     print(f"Created {len(chunks)} chunks.")
-    print("Vector database created successfully.")
+    print("Vector database rebuilt successfully.")
 
     return vector_store
 

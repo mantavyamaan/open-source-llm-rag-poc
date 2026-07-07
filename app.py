@@ -19,6 +19,34 @@ The optimized version retrieves relevant HR policy documents before answering.
 """
 )
 
+import db
+from ingest import create_vector_database
+
+# --- Sidebar: Document Management ---
+with st.sidebar:
+    st.header("📄 Document Management")
+    st.write("Upload HR policies here. The AI will automatically ingest them.")
+    
+    uploaded_file = st.file_uploader("Upload a .txt policy", type=["txt"])
+    if uploaded_file is not None:
+        filename = uploaded_file.name
+        content = uploaded_file.getvalue().decode("utf-8")
+        
+        with st.spinner("Saving and indexing document..."):
+            db.save_document(filename, content)
+            create_vector_database()
+        st.success(f"Successfully added {filename}!")
+        
+    st.markdown("---")
+    st.subheader("📚 Currently Stored Policies")
+    docs = db.get_all_documents()
+    if docs:
+        for doc in docs:
+            st.write(f"- {doc['filename']}")
+    else:
+        st.write("No documents stored yet.")
+
+# --- Main App ---
 question = st.text_input(
     "Ask an HR policy question:",
     placeholder="Example: How many casual leaves are allowed per year?"

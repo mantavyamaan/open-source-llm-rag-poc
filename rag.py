@@ -12,14 +12,8 @@ llm = OllamaLLM(
 
 embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
-vector_store = Chroma(
-    persist_directory=DB_DIR,
-    embedding_function=embeddings
-)
+embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
-retriever = vector_store.as_retriever(
-    search_kwargs={"k": 4}
-)
 
 
 RAG_PROMPT = PromptTemplate(
@@ -62,6 +56,13 @@ Question:
 
 
 def ask_rag_model(question: str) -> dict:
+    # Initialize dynamically to ensure we always read the latest database
+    vector_store = Chroma(
+        persist_directory=DB_DIR,
+        embedding_function=embeddings
+    )
+    retriever = vector_store.as_retriever(search_kwargs={"k": 4})
+    
     docs = retriever.invoke(question)
 
     context = "\n\n".join(
