@@ -1,5 +1,6 @@
 import streamlit as st
 from rag import ask_base_model, ask_rag_model
+import db
 
 
 st.set_page_config(
@@ -44,3 +45,11 @@ if st.button("Ask") and question:
 
     with st.expander("Retrieved Context"):
         st.text(rag_result["retrieved_context"])
+        
+    # Save to database
+    db.save_interaction(
+        question=question,
+        base_answer=base_answer,
+        rag_answer=rag_result["answer"],
+        sources=rag_result["sources"]
+    )

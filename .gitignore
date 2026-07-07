@@ -3,3 +3,4 @@ vector_db/
 __pycache__/
 eval/results.json
 .env
+*.db
