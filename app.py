@@ -1,13 +1,13 @@
 import streamlit as st
-from rag import ask_base_model, ask_rag_model
-import db
-
 
 st.set_page_config(
     page_title="Open-source LLM RAG POC",
     page_icon="🤖",
     layout="wide"
 )
+
+from rag import ask_base_model, ask_rag_model
+import db
 
 st.title("Open-source LLM Optimization POC")
 st.subheader("HR Policy Assistant using Qwen + RAG")
@@ -19,7 +19,6 @@ The optimized version retrieves relevant HR policy documents before answering.
 """
 )
 
-import db
 from ingest import create_vector_database
 
 # --- Sidebar: Document Management ---

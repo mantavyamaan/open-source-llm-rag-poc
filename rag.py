@@ -12,8 +12,6 @@ llm = OllamaLLM(
 
 embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
-
 
 
 RAG_PROMPT = PromptTemplate(
