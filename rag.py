@@ -130,9 +130,12 @@ if __name__ == "__main__":
     question = "How many casual leaves are allowed per year?"
 
     print("Base Model Answer:")
-    print(ask_base_model(question))
+    for chunk in stream_base_model(question):
+        print(chunk, end="", flush=True)
+    print("\n")
 
-    print("\nRAG Optimized Answer:")
-    result = ask_rag_model(question)
-    print(result["answer"])
-    print("Sources:", result["sources"])
+    print("RAG Optimized Answer:")
+    result = stream_rag_model(question)
+    for chunk in result["answer_stream"]:
+        print(chunk, end="", flush=True)
+    print("\nSources:", result["sources"])
