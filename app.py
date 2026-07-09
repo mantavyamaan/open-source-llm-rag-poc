@@ -39,7 +39,6 @@ with st.sidebar:
         st.subheader("📚 Currently Stored Documents")
         st.write("Fetching documents directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
     else:
-        st.info("💡 **Local Data Mode**\nYou can upload files here, or place them directly into the `data/` folder. Then run `python ingest.py` in your terminal.")
         
         uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt"])
         if uploaded_file is not None:
