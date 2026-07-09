@@ -53,7 +53,11 @@ def create_local_vector_database():
             split_chunks = splitter.split_documents([doc])
             
             if split_chunks:
-                vector_store.add_documents(split_chunks)
+                BATCH_SIZE = 100
+                for i in range(0, len(split_chunks), BATCH_SIZE):
+                    batch = split_chunks[i:i + BATCH_SIZE]
+                    vector_store.add_documents(batch)
+                    
                 total_chunks_added += len(split_chunks)
                 print(f"  -> Added batch {batch_number} ({len(split_chunks)} chunks)")
             
@@ -118,7 +122,11 @@ def create_cloud_vector_database():
             split_chunks = splitter.split_documents([doc])
             
             if split_chunks:
-                vector_store.add_documents(split_chunks)
+                BATCH_SIZE = 100
+                for i in range(0, len(split_chunks), BATCH_SIZE):
+                    batch = split_chunks[i:i + BATCH_SIZE]
+                    vector_store.add_documents(batch)
+                    
                 total_chunks_added += len(split_chunks)
                 print(f"  -> Uploaded batch {batch_number} to Pinecone ({len(split_chunks)} chunks)")
             
