@@ -39,7 +39,16 @@ with st.sidebar:
         st.subheader("📚 Currently Stored Policies")
         st.write("Fetching policies directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
     else:
-        st.info("💡 **Local Data Mode**\nTo ingest files, please place your `.txt` files directly into the `data/` folder on your computer, and run `python ingest.py` in your terminal.")
+        st.info("💡 **Local Data Mode**\nYou can upload files here, or place them directly into the `data/` folder. Then run `python ingest.py` in your terminal.")
+        
+        uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt"])
+        if uploaded_file is not None:
+            if not os.path.exists("data"):
+                os.makedirs("data")
+            with open(os.path.join("data", uploaded_file.name), "wb") as f:
+                f.write(uploaded_file.getbuffer())
+            st.success(f"✅ Saved `{uploaded_file.name}` to data/ folder! Now run `python ingest.py` in your terminal.")
+            
         st.markdown("---")
         st.subheader("📚 Currently Stored Policies")
         if os.path.exists("data"):
