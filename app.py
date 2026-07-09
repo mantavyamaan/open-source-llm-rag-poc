@@ -36,8 +36,8 @@ with st.sidebar:
     if use_cloud:
         st.info("💡 **Enterprise Cloud Setup**\nDocuments are now securely managed via Amazon S3. Configure your `.env` file and run `python ingest.py` to stream updates into Pinecone.")
         st.markdown("---")
-        st.subheader("📚 Currently Stored Policies")
-        st.write("Fetching policies directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
+        st.subheader("📚 Currently Stored Documents")
+        st.write("Fetching documents directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
     else:
         st.info("💡 **Local Data Mode**\nYou can upload files here, or place them directly into the `data/` folder. Then run `python ingest.py` in your terminal.")
         
@@ -50,7 +50,7 @@ with st.sidebar:
             st.success(f"✅ Saved `{uploaded_file.name}` to data/ folder! Now run `python ingest.py` in your terminal.")
             
         st.markdown("---")
-        st.subheader("📚 Currently Stored Policies")
+        st.subheader("📚 Currently Stored Documents")
         if os.path.exists("data"):
             files = [f for f in os.listdir("data") if f.endswith('.txt')]
             if files:

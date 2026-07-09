@@ -1,52 +1,52 @@
 [
   {
-    "question": "How many casual leaves are allowed per year?",
-    "expected_answer": "12 casual leaves per calendar year",
-    "source": "leave_policy.txt"
+    "question": "What does Article 14 of the Constitution guarantee?",
+    "expected_answer": "Equality before law and equal protection of the laws.",
+    "source": "constitution.txt"
   },
   {
-    "question": "Can unused casual leaves be carried forward?",
-    "expected_answer": "No, unused casual leaves cannot be carried forward",
-    "source": "leave_policy.txt"
+    "question": "What are the Fundamental Duties mentioned in the Constitution?",
+    "expected_answer": "To abide by the Constitution, respect its ideals, and protect sovereignty.",
+    "source": "constitution.txt"
   },
   {
-    "question": "How many sick leaves are allowed per year?",
-    "expected_answer": "10 sick leaves per calendar year",
-    "source": "leave_policy.txt"
+    "question": "Who has the power to appoint the Prime Minister of India?",
+    "expected_answer": "The President of India.",
+    "source": "constitution.txt"
   },
   {
-    "question": "What is the meal reimbursement limit?",
-    "expected_answer": "Rs. 500 per working day during approved business travel",
-    "source": "reimbursement_policy.txt"
+    "question": "What is the maximum term for a member of the Rajya Sabha?",
+    "expected_answer": "Six years.",
+    "source": "constitution.txt"
   },
   {
-    "question": "What is the hotel reimbursement limit for domestic travel?",
-    "expected_answer": "Rs. 4,000 per night",
-    "source": "reimbursement_policy.txt"
+    "question": "Can the Parliament amend the basic structure of the Constitution?",
+    "expected_answer": "No, the basic structure cannot be amended.",
+    "source": "constitution.txt"
   },
   {
-    "question": "How many work from home days are allowed per month?",
-    "expected_answer": "6 days per calendar month",
-    "source": "wfh_policy.txt"
+    "question": "What is the age requirement to become the President of India?",
+    "expected_answer": "Thirty-five years of age.",
+    "source": "constitution.txt"
   },
   {
-    "question": "When should WFH requests be submitted?",
-    "expected_answer": "At least 1 working day in advance",
-    "source": "wfh_policy.txt"
+    "question": "Which article deals with the abolishment of Untouchability?",
+    "expected_answer": "Article 17.",
+    "source": "constitution.txt"
   },
   {
-    "question": "What documents are required for onboarding?",
-    "expected_answer": "Identity proof, address proof, educational certificates, previous employment documents, PAN card, and bank account details",
-    "source": "onboarding_policy.txt"
+    "question": "What is the primary function of the Election Commission of India?",
+    "expected_answer": "Superintendence, direction and control of elections.",
+    "source": "constitution.txt"
   },
   {
-    "question": "Within how many days should onboarding be completed?",
-    "expected_answer": "Within 5 working days from the joining date",
-    "source": "onboarding_policy.txt"
+    "question": "According to the Constitution, what is the official inter-galactic space treaty protocol?",
+    "expected_answer": "I could not find this information in the provided documents.",
+    "source": "none"
   },
   {
-    "question": "What is the company's pet insurance policy?",
-    "expected_answer": "Information not available in provided documents",
+    "question": "How many seats in the Lok Sabha are reserved for AI robots?",
+    "expected_answer": "I could not find this information in the provided documents.",
     "source": "none"
   }
 ]
