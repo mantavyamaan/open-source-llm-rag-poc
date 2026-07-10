@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Constitution Helper LLM | Portfolio Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>⚖️ Constitution AI</h2>
+                <span class="badge">Demo Mode</span>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>📄 Document Management</h3>
+                <p class="section-desc">Upload constitutional documents here.</p>
+                <div class="upload-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Upload .txt File</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section divider">
+                <h3>📚 Currently Stored</h3>
+                <ul class="file-list">
+                    <li><span class="file-icon">📄</span> constitution.txt</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section divider">
+                <h3>📊 Evaluation Matrix</h3>
+                <div class="matrix-table-container">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Base</th>
+                                <th>RAG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td class="poor">55.6%</td>
+                                <td class="excellent">100.0%</td>
+                            </tr>
+                            <tr>
+                                <td>Hallucination</td>
+                                <td class="poor">100.0%</td>
+                                <td class="excellent">0.0%</td>
+                            </tr>
+                            <tr>
+                                <td>Sourced</td>
+                                <td class="poor">0.0%</td>
+                                <td class="excellent">100.0%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Indian Constitution Helper LLM (Qwen + RAG)</h1>
+                <div class="status-banner">
+                    <span class="status-dot"></span>
+                    Running in Local Mode (Mock UI)
+                </div>
+                <p class="subtitle">This POC compares a base open-source LLM with a RAG-optimized version. The optimized version retrieves relevant constitutional documents before answering.</p>
+            </header>
+
+            <div class="chat-container">
+                <div class="chat-history" id="chatHistory">
+                    <!-- Chat messages will be injected here -->
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">🏛️</div>
+                        <h2>Ask a question about the Constitution</h2>
+                        <p>Try asking: "What does Article 14 guarantee?" or "What are the Fundamental Duties?"</p>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <form id="chatForm">
+                        <input type="text" id="userInput" placeholder="Ask a question about the Indian Constitution..." autocomplete="off">
+                        <button type="submit" id="sendBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
