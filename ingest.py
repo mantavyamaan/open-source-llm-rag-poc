@@ -44,6 +44,57 @@ def load_document(filepath):
         print(f"Error loading {filepath}: {e}")
         return []
 
+def ingest_single_file_local(filepath, filename):
+    """Ingests a single file into the local Chroma vector database."""
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    vector_store = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+    
+    docs = load_document(filepath)
+    if not docs:
+        return False
+        
+    for doc in docs:
+        doc.metadata["source"] = filename
+        
+    split_chunks = splitter.split_documents(docs)
+    if split_chunks:
+        BATCH_SIZE = 100
+        for i in range(0, len(split_chunks), BATCH_SIZE):
+            batch = split_chunks[i:i + BATCH_SIZE]
+            vector_store.add_documents(batch)
+    return True
+
+def ingest_single_file_cloud(filepath, filename):
+    """Ingests a single file into the cloud Pinecone vector database."""
+    PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+    PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+    if not all([PINECONE_API_KEY, PINECONE_INDEX_NAME, OPENAI_API_KEY]):
+        print("Missing cloud API keys.")
+        return False
+
+    pc = Pinecone(api_key=PINECONE_API_KEY)
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
+    vector_store = PineconeVectorStore(index_name=PINECONE_INDEX_NAME, embedding=embeddings)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+
+    docs = load_document(filepath)
+    if not docs:
+        return False
+        
+    for doc in docs:
+        doc.metadata["source"] = filename
+        
+    split_chunks = splitter.split_documents(docs)
+    if split_chunks:
+        BATCH_SIZE = 100
+        for i in range(0, len(split_chunks), BATCH_SIZE):
+            batch = split_chunks[i:i + BATCH_SIZE]
+            vector_store.add_documents(batch)
+    return True
+
 def create_local_vector_database():
     print("Running in LOCAL MODE...")
     if not os.path.exists(DATA_DIR):

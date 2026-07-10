@@ -3,6 +3,7 @@ import streamlit as st
 import db
 import json
 from rag import ask_base_model, ask_rag_model, stream_base_model, stream_rag_model
+from ingest import ingest_single_file_local, ingest_single_file_cloud
 
 st.set_page_config(
     page_title="Indian Constitution Helper LLM",
@@ -33,20 +34,61 @@ with st.sidebar:
     st.header("📄 Document Management")
     st.write("Upload constitutional documents here. The AI will automatically ingest them.")
     
+    if "processed_files" not in st.session_state:
+        st.session_state.processed_files = set()
+
     if use_cloud:
-        st.info("💡 **Enterprise Cloud Setup**\nDocuments are now securely managed via Amazon S3. Configure your `.env` file and run `python ingest.py` to stream updates into Pinecone.")
+        st.info("💡 **Enterprise Cloud Setup**\nDocuments are now securely managed via Amazon S3. Configure your `.env` file.")
+        
+        uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt", "pdf", "docx", "pptx"])
+        if uploaded_file is not None and uploaded_file.name not in st.session_state.processed_files:
+            import boto3
+            import tempfile
+            st.info("Uploading and indexing to Cloud...")
+            AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+            AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+            AWS_REGION = os.getenv("AWS_REGION")
+            S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+            
+            try:
+                s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, region_name=AWS_REGION)
+                ext = os.path.splitext(uploaded_file.name)[1].lower()
+                with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
+                    tmp_file.write(uploaded_file.getbuffer())
+                    tmp_filepath = tmp_file.name
+                
+                s3_client.upload_file(tmp_filepath, S3_BUCKET_NAME, uploaded_file.name)
+                
+                with st.spinner(f"Ingesting {uploaded_file.name} to Pinecone..."):
+                    success = ingest_single_file_cloud(tmp_filepath, uploaded_file.name)
+                
+                os.remove(tmp_filepath)
+                if success:
+                    st.session_state.processed_files.add(uploaded_file.name)
+                    st.success(f"✅ Automated Ingestion Complete for `{uploaded_file.name}`!")
+            except Exception as e:
+                st.error(f"Cloud ingestion failed: {e}")
+
         st.markdown("---")
         st.subheader("📚 Currently Stored Documents")
         st.write("Fetching documents directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
     else:
         
         uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt", "pdf", "docx", "pptx"])
-        if uploaded_file is not None:
+        if uploaded_file is not None and uploaded_file.name not in st.session_state.processed_files:
             if not os.path.exists("data"):
                 os.makedirs("data")
-            with open(os.path.join("data", uploaded_file.name), "wb") as f:
+            filepath = os.path.join("data", uploaded_file.name)
+            with open(filepath, "wb") as f:
                 f.write(uploaded_file.getbuffer())
-            st.success(f"✅ Saved `{uploaded_file.name}` to data/ folder! Now run `python ingest.py` in your terminal.")
+            
+            with st.spinner(f"Ingesting {uploaded_file.name} into local knowledge base..."):
+                success = ingest_single_file_local(filepath, uploaded_file.name)
+                if success:
+                    st.session_state.processed_files.add(uploaded_file.name)
+                    st.success(f"✅ Automated Ingestion Complete for `{uploaded_file.name}`!")
+                else:
+                    st.error(f"Failed to ingest {uploaded_file.name}")
             
         st.markdown("---")
         st.subheader("📚 Currently Stored Documents")
