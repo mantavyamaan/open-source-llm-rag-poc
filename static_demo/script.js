@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const demoResponse = {
         base: "This is a static portfolio demo website designed to showcase the UI. The actual backend AI model is disconnected to save on cloud GPU costs.",
-        rag: "To experience the fully functional Indian Constitution Helper LLM, please visit the project's GitHub repository. Follow the installation steps outlined in the README.md file to run the open-source model locally on your own machine!",
-        source: "github.com/mantavyamaan/open-source-llm-rag-poc"
+        rag: "To experience the fully functional DocuMind AI, please visit the project's GitHub repository. Follow the installation steps outlined in the README.md file to run the open-source model locally on your own machine!",
+        source: "github.com/mantavyamaan/DocuMind-AI"
     };
 
     // File upload simulation logic

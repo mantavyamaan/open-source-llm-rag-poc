@@ -41,8 +41,8 @@ ollama pull nomic-embed-text
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/mantavyamaan/open-source-llm-rag-poc.git
-cd open-source-llm-rag-poc
+git clone https://github.com/mantavyamaan/DocuMind-AI.git
+cd DocuMind-AI
 ```
 
 ### 3. Create a Virtual Environment
