@@ -22,7 +22,7 @@ llm = OllamaLLM(
 RAG_PROMPT = PromptTemplate(
     input_variables=["context", "question"],
     template="""
-You are an expert Indian Constitution Helper LLM.
+You are an expert DocuMind AI Assistant.
 
 Answer the user's question using only the provided context.
 
@@ -30,7 +30,7 @@ Rules:
 1. If the exact answer is present in the context, answer clearly.
 2. If the exact answer is not present, state clearly that you cannot find the exact information. However, if the context contains closely related topics (e.g., you are asked about Article 31, but the context contains Article 31A or 31B), you MUST summarize this related information to be helpful.
 3. If neither the exact answer nor related information is in the context, say: "I could not find this information in the provided documents."
-4. GUARDRAIL: If the user asks a question that is completely unrelated to law, government, or the Indian Constitution, politely inform them that you are a specialized Indian Constitution Assistant and cannot answer off-topic questions.
+3. GUARDRAIL: If the user asks a question that is completely unrelated to the provided documents, politely inform them that you are a specialized DocuMind AI Assistant and cannot answer off-topic questions.
 5. Do not use outside knowledge. Do not guess.
 6. Mention the source document names used.
 7. Keep the answer concise and user-friendly.
@@ -144,7 +144,7 @@ def stream_rag_model(question: str) -> dict:
 
 
 if __name__ == "__main__":
-    question = "What are the fundamental rights of a citizen?"
+    question = "What are the key capabilities outlined in the project overview?"
 
     print("Base Model Answer:")
     for chunk in stream_base_model(question):

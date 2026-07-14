@@ -6,7 +6,7 @@ from rag import ask_base_model, ask_rag_model, stream_base_model, stream_rag_mod
 from ingest import ingest_single_file_local, ingest_single_file_cloud
 
 st.set_page_config(
-    page_title="Indian Constitution Helper LLM",
+    page_title="DocuMind AI (RAG POC)",
     page_icon="⚖️",
     layout="wide"
 )
@@ -14,8 +14,8 @@ st.set_page_config(
 # Detect Mode
 use_cloud = os.getenv("USE_CLOUD_SETUP", "false").lower() == "true"
 
-st.title("Indian Constitution Helper LLM")
-st.subheader("Indian Constitution Helper LLM (Qwen + RAG)")
+st.title("DocuMind AI")
+st.subheader("DocuMind AI (Qwen + RAG)")
 
 if use_cloud:
     st.success("☁️ **Running in Enterprise Cloud Mode** (Amazon S3 + Pinecone + OpenAI)")
@@ -25,14 +25,14 @@ else:
 st.write(
     """
 This POC compares a base open-source LLM with a RAG-optimized version.
-The optimized version retrieves relevant constitutional documents before answering.
+The optimized version retrieves relevant documents from your private knowledge base before answering.
 """
 )
 
 # --- Sidebar: Document Management ---
 with st.sidebar:
     st.header("📄 Document Management")
-    st.write("Upload constitutional documents here. The AI will automatically ingest them.")
+    st.write("Upload your documents here. The AI will automatically ingest them.")
     
     if "processed_files" not in st.session_state:
         st.session_state.processed_files = set()
@@ -40,7 +40,7 @@ with st.sidebar:
     if use_cloud:
         st.info("💡 **Enterprise Cloud Setup**\nDocuments are now securely managed via Amazon S3. Configure your `.env` file.")
         
-        uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt", "pdf", "docx", "pptx"])
+        uploaded_file = st.file_uploader("Upload Document", type=["txt", "pdf", "docx", "pptx"])
         if uploaded_file is not None and uploaded_file.name not in st.session_state.processed_files:
             import boto3
             import tempfile
@@ -76,7 +76,7 @@ with st.sidebar:
         st.write("Fetching documents directly from Amazon S3 is disabled in the UI for performance. Please check your S3 bucket directly.")
     else:
         
-        uploaded_file = st.file_uploader("Upload Constitutional Document", type=["txt", "pdf", "docx", "pptx"])
+        uploaded_file = st.file_uploader("Upload Document", type=["txt", "pdf", "docx", "pptx"])
         if uploaded_file is not None and uploaded_file.name not in st.session_state.processed_files:
             if not os.path.exists("data"):
                 os.makedirs("data")
@@ -151,8 +151,8 @@ with st.sidebar:
 # --- Main App ---
 with st.form("chat_form"):
     question = st.text_input(
-        "Ask a question about the Indian Constitution:",
-        placeholder="Example: What are the fundamental rights of a citizen?"
+        "Ask a question about your documents:",
+        placeholder="Example: What are the key capabilities outlined in the project overview?"
     )
     submitted = st.form_submit_button("Ask")
 

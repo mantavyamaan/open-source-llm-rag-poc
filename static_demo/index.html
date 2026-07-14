@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian Constitution Helper LLM | Portfolio Demo</title>
+    <title>DocuMind AI | Portfolio Demo</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -12,13 +12,13 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>⚖️ Constitution AI</h2>
+                <h2>⚖️ DocuMind AI</h2>
                 <span class="badge">Demo Mode</span>
             </div>
             
             <div class="sidebar-section">
                 <h3>📄 Document Management</h3>
-                <p class="section-desc">Upload constitutional documents here.</p>
+                <p class="section-desc">Upload your documents here. The AI will automatically ingest them.</p>
                 <div class="upload-box" id="uploadBox">
                     <input type="file" id="fileUpload" accept=".txt,.pdf,.docx,.pptx" style="display: none;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -70,12 +70,12 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="main-header">
-                <h1>Indian Constitution Helper LLM (Qwen + RAG)</h1>
+                <h1>DocuMind AI (Qwen + RAG)</h1>
                 <div class="status-banner">
                     <span class="status-dot"></span>
                     Running in Local Mode (Mock UI)
                 </div>
-                <p class="subtitle">This POC compares a base open-source LLM with a RAG-optimized version. The optimized version retrieves relevant constitutional documents before answering.</p>
+                <p class="subtitle">The optimized version retrieves relevant documents from your private knowledge base before answering.</p>
             </header>
 
             <div class="chat-container">
@@ -83,14 +83,14 @@
                     <!-- Chat messages will be injected here -->
                     <div class="empty-state" id="emptyState">
                         <div class="empty-icon">🏛️</div>
-                        <h2>Ask a question about the Constitution</h2>
-                        <p>Try asking: "What does Article 14 guarantee?" or "What are the Fundamental Duties?"</p>
+                        <h2>Ask a question about your documents:</h2>
+                        <p>Try asking: "What are the key capabilities outlined in the project overview?"</p>
                     </div>
                 </div>
 
                 <div class="input-area">
                     <form id="chatForm">
-                        <input type="text" id="userInput" placeholder="Ask a question about the Indian Constitution..." autocomplete="off">
+                        <input type="text" id="userInput" placeholder="Ask a question about your documents..." autocomplete="off">
                         <button type="submit" id="sendBtn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                         </button>

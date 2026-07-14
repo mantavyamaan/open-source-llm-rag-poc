@@ -1,9 +1,9 @@
-# Indian Constitution Helper LLM (RAG POC)
+# DocuMind AI (RAG POC)
 
 ## Overview
-This Proof of Concept (POC) demonstrates how a general-purpose, open-source Large Language Model (LLM) can be optimized for a specific use case—an **Indian Constitution Helper LLM**. 
+This Proof of Concept (POC) demonstrates how a general-purpose, open-source Large Language Model (LLM) can be optimized for a specific use case—a **DocuMind AI** for your private documents. 
 
-Instead of relying on computationally expensive fine-tuning, this project utilizes **Retrieval-Augmented Generation (RAG)** to ground the LLM in constitutional and legal documents. This approach significantly improves factual accuracy, reduces hallucinations, allows for explicit source citations, and keeps data private by running the model locally.
+Instead of relying on computationally expensive fine-tuning, this project utilizes **Retrieval-Augmented Generation (RAG)** to ground the LLM in your uploaded documents. This approach significantly improves factual accuracy, reduces hallucinations, allows for explicit source citations, and keeps data private by running the model locally.
 
 ## Features
 * **Multi-Modal Document Parsing:** Seamlessly ingest and parse complex file formats including **PDFs (`.pdf`)**, **Word Documents (`.docx`)**, **PowerPoint (`.pptx`)**, and plain text (`.txt`).
@@ -11,8 +11,8 @@ Instead of relying on computationally expensive fine-tuning, this project utiliz
 * **Dual-Mode Architecture:** Run the entire system locally on your laptop, or instantly flip a switch to process massive 100 GB+ datasets using Enterprise Cloud infrastructure (Amazon S3 + Pinecone + OpenAI Embeddings).
 * **Local Open-Source AI:** Uses `Qwen2.5:7b` via Ollama for fast, secure, and private on-device text generation.
 * **Real-time UI Streaming:** Answers are streamed word-by-word into the UI (just like ChatGPT) for zero perceived latency.
-* **Strict Guardrails & Graceful Pivoting:** The model securely rejects irrelevant or nuisance questions, and intelligently pivots to related topics if exact constitutional articles are missing.
-* **Source Citation:** The optimized model explicitly cites the exact constitutional document used to generate its answer.
+* **Strict Guardrails & Graceful Pivoting:** The model securely rejects irrelevant or nuisance questions, and intelligently pivots to related topics if exact information is missing.
+* **Source Citation:** The optimized model explicitly cites the exact source document used to generate its answer.
 * **Chat Logging:** All questions, generated answers, and source citations are silently logged to an SQLite database (`chat_history.db`) for auditing.
 * **Automated Evaluation Matrix:** Includes a benchmarking script that tests for Factual Accuracy, Hallucination Prevention, and Source Grounding. The results are displayed live in a beautiful matrix in the Streamlit UI.
 
@@ -85,7 +85,7 @@ Bypasses local hardware limits by streaming from Amazon S3, embedding with OpenA
 ## 🏃‍♂️ Running the Application
 
 ### 1. Launch the Web Interface
-Start the Streamlit application to interact with the Constitution Helper:
+Start the Streamlit application to interact with DocuMind AI:
 ```bash
 streamlit run app.py
 ```
