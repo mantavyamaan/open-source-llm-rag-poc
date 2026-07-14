@@ -60,12 +60,14 @@ with st.sidebar:
                 s3_client.upload_file(tmp_filepath, S3_BUCKET_NAME, uploaded_file.name)
                 
                 with st.spinner(f"Ingesting {uploaded_file.name} to Pinecone..."):
-                    success = ingest_single_file_cloud(tmp_filepath, uploaded_file.name)
+                    result = ingest_single_file_cloud(tmp_filepath, uploaded_file.name)
                 
                 os.remove(tmp_filepath)
-                if success:
+                if result == True:
                     st.session_state.processed_files.add(uploaded_file.name)
                     st.success(f"✅ Automated Ingestion Complete for `{uploaded_file.name}`!")
+                elif result == "NO_TEXT":
+                    st.warning(f"⚠️ `{uploaded_file.name}` is a scanned image or empty. No text extracted. OCR is required.")
             except Exception as e:
                 st.error(f"Cloud ingestion failed: {e}")
 
@@ -83,10 +85,12 @@ with st.sidebar:
                 f.write(uploaded_file.getbuffer())
             
             with st.spinner(f"Ingesting {uploaded_file.name} into local knowledge base..."):
-                success = ingest_single_file_local(filepath, uploaded_file.name)
-                if success:
+                result = ingest_single_file_local(filepath, uploaded_file.name)
+                if result == True:
                     st.session_state.processed_files.add(uploaded_file.name)
                     st.success(f"✅ Automated Ingestion Complete for `{uploaded_file.name}`!")
+                elif result == "NO_TEXT":
+                    st.warning(f"⚠️ `{uploaded_file.name}` is a scanned image or empty. No text extracted. OCR is required.")
                 else:
                     st.error(f"Failed to ingest {uploaded_file.name}")
             

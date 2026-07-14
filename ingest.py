@@ -58,11 +58,13 @@ def ingest_single_file_local(filepath, filename):
         doc.metadata["source"] = filename
         
     split_chunks = splitter.split_documents(docs)
-    if split_chunks:
-        BATCH_SIZE = 100
-        for i in range(0, len(split_chunks), BATCH_SIZE):
-            batch = split_chunks[i:i + BATCH_SIZE]
-            vector_store.add_documents(batch)
+    if not split_chunks:
+        return "NO_TEXT"
+        
+    BATCH_SIZE = 100
+    for i in range(0, len(split_chunks), BATCH_SIZE):
+        batch = split_chunks[i:i + BATCH_SIZE]
+        vector_store.add_documents(batch)
     return True
 
 def ingest_single_file_cloud(filepath, filename):
@@ -88,11 +90,13 @@ def ingest_single_file_cloud(filepath, filename):
         doc.metadata["source"] = filename
         
     split_chunks = splitter.split_documents(docs)
-    if split_chunks:
-        BATCH_SIZE = 100
-        for i in range(0, len(split_chunks), BATCH_SIZE):
-            batch = split_chunks[i:i + BATCH_SIZE]
-            vector_store.add_documents(batch)
+    if not split_chunks:
+        return "NO_TEXT"
+        
+    BATCH_SIZE = 100
+    for i in range(0, len(split_chunks), BATCH_SIZE):
+        batch = split_chunks[i:i + BATCH_SIZE]
+        vector_store.add_documents(batch)
     return True
 
 def create_local_vector_database():
