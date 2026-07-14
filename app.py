@@ -6,7 +6,7 @@ from rag import ask_base_model, ask_rag_model, stream_base_model, stream_rag_mod
 from ingest import ingest_single_file_local, ingest_single_file_cloud
 
 st.set_page_config(
-    page_title="DocuMind AI (RAG POC)",
+    page_title="DocuMind AI",
     page_icon="⚖️",
     layout="wide"
 )
@@ -24,7 +24,7 @@ else:
 
 st.write(
     """
-This POC compares a base open-source LLM with a RAG-optimized version.
+This project compares a base open-source LLM with a RAG-optimized version.
 The optimized version retrieves relevant documents from your private knowledge base before answering.
 """
 )

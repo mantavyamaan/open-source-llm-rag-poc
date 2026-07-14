@@ -1,7 +1,7 @@
-# DocuMind AI (RAG POC)
+# DocuMind AI
 
 ## Overview
-This Proof of Concept (POC) demonstrates how a general-purpose, open-source Large Language Model (LLM) can be optimized for a specific use case—a **DocuMind AI** for your private documents. 
+This project demonstrates how a general-purpose, open-source Large Language Model (LLM) can be optimized for a specific use case—a **DocuMind AI** for your private documents. 
 
 Instead of relying on computationally expensive fine-tuning, this project utilizes **Retrieval-Augmented Generation (RAG)** to ground the LLM in your uploaded documents. This approach significantly improves factual accuracy, reduces hallucinations, allows for explicit source citations, and keeps data private by running the model locally.
 
