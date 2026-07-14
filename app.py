@@ -160,10 +160,6 @@ if submitted and question:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("### Base Open-source LLM")
-        base_answer = st.write_stream(stream_base_model(question))
-
-    with col2:
         st.markdown("### RAG-Optimized LLM")
         spinner_text = "Retrieving context from Pinecone..." if use_cloud else "Retrieving context from Local ChromaDB..."
         with st.spinner(spinner_text):
@@ -180,6 +176,10 @@ if submitted and question:
             except Exception as e:
                 st.error(f"An error occurred: {e}")
                 st.stop()
+
+    with col2:
+        st.markdown("### Base Open-source LLM")
+        base_answer = st.write_stream(stream_base_model(question))
 
     with st.expander("Retrieved Context"):
         st.text(rag_result["retrieved_context"])
