@@ -1,12 +1,13 @@
 import os
 import boto3
 import tempfile
+import pickle
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from langchain_community.document_loaders import (
-    PyPDFLoader,
+    UnstructuredPDFLoader,
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
     TextLoader
@@ -22,17 +23,19 @@ load_dotenv()
 
 DB_DIR = "vector_db"
 DATA_DIR = "data"
+BM25_STORE = os.path.join(DB_DIR, "bm25_docs.pkl")
 
 def load_document(filepath):
     """Routes the file to the correct document loader based on extension."""
     ext = os.path.splitext(filepath)[1].lower()
     try:
+        # We use chunking_strategy="by_title" for Unstructured loaders to get heading-aware chunking natively
         if ext == '.pdf':
-            loader = PyPDFLoader(filepath)
+            loader = UnstructuredPDFLoader(filepath, chunking_strategy="by_title", strategy="fast")
         elif ext == '.pptx':
-            loader = UnstructuredPowerPointLoader(filepath)
+            loader = UnstructuredPowerPointLoader(filepath, chunking_strategy="by_title")
         elif ext == '.docx':
-            loader = UnstructuredWordDocumentLoader(filepath)
+            loader = UnstructuredWordDocumentLoader(filepath, chunking_strategy="by_title")
         elif ext == '.txt':
             loader = TextLoader(filepath, encoding='utf-8')
         else:
@@ -44,11 +47,31 @@ def load_document(filepath):
         print(f"Error loading {filepath}: {e}")
         return []
 
+def update_bm25_index(new_docs):
+    """Persists document chunks to a pickle file for BM25 hybrid search."""
+    if not os.path.exists(DB_DIR):
+        os.makedirs(DB_DIR)
+        
+    all_docs = []
+    if os.path.exists(BM25_STORE):
+        with open(BM25_STORE, "rb") as f:
+            try:
+                all_docs = pickle.load(f)
+            except:
+                pass
+                
+    all_docs.extend(new_docs)
+    
+    with open(BM25_STORE, "wb") as f:
+        pickle.dump(all_docs, f)
+
 def ingest_single_file_local(filepath, filename):
-    """Ingests a single file into the local Chroma vector database."""
+    """Ingests a single file into the local Chroma vector database and BM25 index."""
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
     vector_store = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+    
+    # We still keep a fallback splitter for txt files or large unstructured chunks
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=150)
     
     docs = load_document(filepath)
     if not docs:
@@ -65,10 +88,12 @@ def ingest_single_file_local(filepath, filename):
     for i in range(0, len(split_chunks), BATCH_SIZE):
         batch = split_chunks[i:i + BATCH_SIZE]
         vector_store.add_documents(batch)
+        
+    update_bm25_index(split_chunks)
     return True
 
 def ingest_single_file_cloud(filepath, filename):
-    """Ingests a single file into the cloud Pinecone vector database."""
+    """Ingests a single file into the cloud Pinecone vector database and local BM25 index."""
     PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
     PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -80,7 +105,7 @@ def ingest_single_file_cloud(filepath, filename):
     pc = Pinecone(api_key=PINECONE_API_KEY)
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
     vector_store = PineconeVectorStore(index_name=PINECONE_INDEX_NAME, embedding=embeddings)
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=150)
 
     docs = load_document(filepath)
     if not docs:
@@ -97,6 +122,8 @@ def ingest_single_file_cloud(filepath, filename):
     for i in range(0, len(split_chunks), BATCH_SIZE):
         batch = split_chunks[i:i + BATCH_SIZE]
         vector_store.add_documents(batch)
+        
+    update_bm25_index(split_chunks)
     return True
 
 def create_local_vector_database():
@@ -108,8 +135,7 @@ def create_local_vector_database():
 
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
     vector_store = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
-
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=150)
 
     files = [f for f in os.listdir(DATA_DIR) if f.lower().endswith(('.txt', '.pdf', '.docx', '.pptx'))]
     if not files:
@@ -117,10 +143,11 @@ def create_local_vector_database():
         return
 
     total_chunks_added = 0
+    all_new_chunks = []
 
     for filename in files:
         filepath = os.path.join(DATA_DIR, filename)
-        print(f"Processing {filename} locally...")
+        print(f"Processing {filename} locally with smart chunking...")
         
         docs = load_document(filepath)
         if not docs:
@@ -137,9 +164,11 @@ def create_local_vector_database():
                 batch = split_chunks[i:i + BATCH_SIZE]
                 vector_store.add_documents(batch)
                 
+            all_new_chunks.extend(split_chunks)
             total_chunks_added += len(split_chunks)
             print(f"  -> Added {len(split_chunks)} chunks")
 
+    update_bm25_index(all_new_chunks)
     print(f"\nLocal Vector database ingestion completed! Total chunks indexed: {total_chunks_added}")
 
 
@@ -163,15 +192,8 @@ def create_cloud_vector_database():
     pc = Pinecone(api_key=PINECONE_API_KEY)
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
     vector_store = PineconeVectorStore(index_name=PINECONE_INDEX_NAME, embedding=embeddings)
-
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=AWS_REGION
-    )
-
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=120)
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, region_name=AWS_REGION)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=150)
 
     try:
         response = s3_client.list_objects_v2(Bucket=S3_BUCKET_NAME)
@@ -185,10 +207,10 @@ def create_cloud_vector_database():
         return
 
     total_chunks_added = 0
+    all_new_chunks = []
 
     for filename in files:
         print(f"Streaming {filename} from Amazon S3...")
-        
         s3_object = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=filename)
         body = s3_object['Body'].read()
         
@@ -214,9 +236,11 @@ def create_cloud_vector_database():
                 batch = split_chunks[i:i + BATCH_SIZE]
                 vector_store.add_documents(batch)
                 
+            all_new_chunks.extend(split_chunks)
             total_chunks_added += len(split_chunks)
             print(f"  -> Uploaded {len(split_chunks)} chunks to Pinecone")
 
+    update_bm25_index(all_new_chunks)
     print(f"\nCloud Vector database ingestion completed! Total chunks indexed: {total_chunks_added}")
 
 

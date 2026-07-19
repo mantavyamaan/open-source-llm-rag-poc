@@ -17,3 +17,6 @@ unstructured
 fastapi
 uvicorn
 python-multipart
+rank_bm25
+sentence-transformers
+unstructured[pdf]
